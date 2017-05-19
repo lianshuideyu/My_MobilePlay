@@ -1,28 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.atguigu.my_mobileplay.view.TitleBarView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:orientation="horizontal"
     android:background="#398DEE"
-    android:padding="5dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="5dp">
 
     <ImageView
-        android:src="@drawable/ic_topbanner_logo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_topbanner_logo" />
+
     <TextView
-        android:textColor="@drawable/ic_tvcolor"
-        android:drawableLeft="@drawable/ic_sousuo"
-        android:gravity="center_vertical"
-        android:text="全网搜索..."
-        android:layout_marginLeft="5dp"
-        android:clickable="true"
-        android:layout_weight="1"
+        android:id="@+id/tv_sousuo"
         android:layout_width="0dp"
         android:layout_height="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
         android:background="@drawable/tv_bg_selector"
-        />
-    
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_sousuo"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:text="全网搜索..."
+        android:textColor="@drawable/ic_tvcolor" />
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/rl_game"
+        android:layout_marginLeft="5dp"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_game"
+            android:drawableLeft="@drawable/ic_topbanner_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:src="@drawable/iv_game_point"
+            android:layout_alignRight="@id/tv_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/iv_record"
+        android:layout_marginLeft="5dp"
+        android:src="@drawable/ic_topbanner_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</com.atguigu.my_mobileplay.view.TitleBarView>
