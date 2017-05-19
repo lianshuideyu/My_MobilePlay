@@ -7,21 +7,52 @@
     android:orientation="vertical"
     tools:context="com.atguigu.my_mobileplay.MainMobilePlayActivity">
 
-    <include
-        layout="@layout/ll_title"/>
+    <include layout="@layout/ll_title" />
 
     <FrameLayout
-        android:layout_weight="1"
+        android:id="@+id/fl_pageFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
     </FrameLayout>
 
     <RadioGroup
-        android:orientation="horizontal"
-        android:background="#F2F2F2"
+        android:id="@+id/rg_bottom"
         android:layout_width="match_parent"
-        android:layout_height="60dp">
+        android:layout_height="60dp"
+        android:background="#F2F2F2"
+        android:orientation="horizontal"
+        android:padding="5dp">
 
+        <RadioButton
+            android:id="@+id/rb_local_video"
+            android:drawableTop="@drawable/local_video_selector"
+            android:text="本地视频"
+            style="@style/bottom_button"
+             />
+
+        <RadioButton
+            android:id="@+id/rb_local_audio"
+            android:drawableTop="@drawable/local_audio_selector"
+            android:text="本地音乐"
+
+            style="@style/bottom_button"
+            />
+        <RadioButton
+            android:id="@+id/rb_net_audio"
+            android:drawableTop="@drawable/net_audio_selector"
+            android:text="网络歌曲"
+
+            style="@style/bottom_button"
+            />
+        <RadioButton
+            android:id="@+id/rb_net_video"
+            android:drawableTop="@drawable/net_video_selector"
+            android:text="网络视频"
+
+            style="@style/bottom_button"
+            />
 
     </RadioGroup>
 
