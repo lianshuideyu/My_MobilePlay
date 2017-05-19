@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.atguigu.my_mobileplay">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--
+     android:configChanges="keyboardHidden|orientation|screenSize"
+    解决横竖屏，屏幕大小切换等生命周期重新执行的问题
+    -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon2"
@@ -16,11 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMobilePlayActivity"
+        <activity
+            android:name=".MainMobilePlayActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
+        <activity android:name=".activity.SystemVideoPlayerActivity"
+            android:theme="@style/myScreen"></activity>
     </application>
-<!-- android:configChanges="keyboardHidden|orientation|screenSize"
-    解决横竖屏，屏幕大小切换等生命周期重新执行的问题
--->
+
 </manifest>

@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.activity.SystemVideoPlayerActivity;
 import com.atguigu.my_mobileplay.adapter.LocalVideoAdapter;
 import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
@@ -44,7 +45,7 @@ public class LocalVideoFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MediaItem item = adapter.getItem(i);
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Intent intent = new Intent(context, SystemVideoPlayerActivity.class);
                 intent.setDataAndType(Uri.parse(item.getData()),"video/*");
                 startActivity(intent);
             }
