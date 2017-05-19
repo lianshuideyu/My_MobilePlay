@@ -19,5 +19,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"></activity>
     </application>
-
+<!-- android:configChanges="keyboardHidden|orientation|screenSize"
+    解决横竖屏，屏幕大小切换等生命周期重新执行的问题
+-->
 </manifest>

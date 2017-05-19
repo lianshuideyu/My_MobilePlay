@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.RadioGroup;
 
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
@@ -26,7 +27,7 @@ public class MainMobilePlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_mobile_play);
 
-        rg_bottom = (RadioGroup)findViewById(R.id.rg_bottom);
+        rg_bottom = (RadioGroup) findViewById(R.id.rg_bottom);
 
         initDatas();
 
@@ -38,16 +39,16 @@ public class MainMobilePlayActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 switch (checkedId) {
-                    case  R.id.rb_local_video:
+                    case R.id.rb_local_video:
                         position = 0;
                         break;
-                    case  R.id.rb_local_audio:
+                    case R.id.rb_local_audio:
                         position = 1;
                         break;
-                    case  R.id.rb_net_audio:
+                    case R.id.rb_net_audio:
                         position = 2;
                         break;
-                    case  R.id.rb_net_video:
+                    case R.id.rb_net_video:
                         position = 3;
                         break;
                 }
@@ -58,29 +59,29 @@ public class MainMobilePlayActivity extends AppCompatActivity {
 
             }
         });
-        
+
         //默认勾选本地视频
         rg_bottom.check(R.id.rb_local_video);
     }
-    
+
     //切换页面Fragment
     private void addFragment(BaseFragment currFragment) {
-        if(currFragment != temFragment) {
+        if (currFragment != temFragment) {
             //得到事务管理并开启事务
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if(!currFragment.isAdded()) {
+            if (!currFragment.isAdded()) {
                 //判断是否添加--如没有添加
                 //把之前的隐藏
-                if(temFragment != null) {
+                if (temFragment != null) {
                     ft.hide(temFragment);
                 }
                 //添加当前的
-                ft.add(R.id.fl_pageFragment,currFragment);
-                
-            }else {
+                ft.add(R.id.fl_pageFragment, currFragment);
+
+            } else {
                 //如添加
                 //把之前的隐藏
-                if(temFragment != null) {
+                if (temFragment != null) {
                     ft.hide(temFragment);
                 }
                 //显示当前的
@@ -108,5 +109,44 @@ public class MainMobilePlayActivity extends AppCompatActivity {
         fragments.add(new LocalAudioFragment());
         fragments.add(new NetAudioFragment());
         fragments.add(new NetVideoFragment());
+    }
+
+    /**
+     * 声明周期
+     */
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.e("MainActivity", "onRestart");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e("MainActivity", "onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e("MainActivity", "onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("MainActivity", "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e("MainActivity", "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("MainActivity", "onDestroy");
     }
 }

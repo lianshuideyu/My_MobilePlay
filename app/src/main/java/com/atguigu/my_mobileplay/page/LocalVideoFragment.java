@@ -1,6 +1,7 @@
 package com.atguigu.my_mobileplay.page;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ public class LocalVideoFragment extends BaseFragment {
 
     @Override
     public View initView() {
+        Log.e("TAG","LocalVideoPager-initView");
         textView = new TextView(context);
         textView.setTextColor(Color.RED);
         textView.setTextSize(25);
@@ -26,6 +28,7 @@ public class LocalVideoFragment extends BaseFragment {
 
     @Override
     public void initData() {
+        Log.e("TAG","LocalVideoPager-initData");
         super.initData();
 
         textView.setText("本地视频");
