@@ -1,10 +1,12 @@
 package com.atguigu.my_mobileplay.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/5/19.
  */
 
-public class MediaItem {
+public class MediaItem implements Serializable{
 
     private String name;
     private long duration;//时长

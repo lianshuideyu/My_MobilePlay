@@ -157,7 +157,6 @@ public class MainMobilePlayActivity extends AppCompatActivity {
 
     /**
      * 解决安卓6.0以上版本不能读取外部存储权限的问题
-     *
      * @param activity
      * @return
      */
@@ -172,7 +171,6 @@ public class MainMobilePlayActivity extends AppCompatActivity {
 
             return false;
         }
-
         return true;
     }
 }

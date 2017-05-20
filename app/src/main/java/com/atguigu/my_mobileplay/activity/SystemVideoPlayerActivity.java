@@ -21,9 +21,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -53,6 +55,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     //广播
     private MyBroadCastReceiver receiver;
     private int batteryView;
+
+    private ArrayList<MediaItem> mediaItems;
+    private int position;//视频列表的位置
 
     private void findViews() {
         setContentView(R.layout.activity_system_video_player);
@@ -92,12 +97,16 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         findViews();
         utils = new Utils();
 
-        uri = getIntent().getData();
+        //uri = getIntent().getData();
         initData();
+
+        getData();
 
         //设置三个监听
         //当准备好播放时候调用
         setListener();
+
+        setData();
 
         //设置seekbar状态的监听
         seekbarVideo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -125,6 +134,26 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
             }
         });
+    }
+
+    private void getData() {
+        //得到播放地址
+        uri = getIntent().getData();
+        mediaItems = (ArrayList<MediaItem>) getIntent().getSerializableExtra("videolist");
+        position = getIntent().getIntExtra("position",0);
+    }
+
+    private void setData() {
+        if(mediaItems != null && mediaItems.size() > 0) {
+            MediaItem mediaItem = mediaItems.get(position);
+            tvName.setText(mediaItem.getData());
+            vv.setVideoPath(mediaItem.getData());
+
+        }else if(uri != null) {
+            //当只有一个播放内容的时候
+            vv.setVideoURI(uri);
+        }
+        
     }
 
     private void initData() {
@@ -199,12 +228,13 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                Toast.makeText(SystemVideoPlayerActivity.this, "播放完成", Toast.LENGTH_SHORT).show();
-                finish();//播放完成退出
+//                Toast.makeText(SystemVideoPlayerActivity.this, "播放完成", Toast.LENGTH_SHORT).show();
+//                finish();//播放完成退出
+                setNextVideo();
             }
         });
         //设置播放地址
-        vv.setVideoURI(uri);
+        //vv.setVideoURI(uri);
         //设置控制面板
         //vv.setMediaController(new MediaController(this));
     }
@@ -215,9 +245,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         } else if (v == btnSwitchPlayer) {
 
         } else if (v == btnExit) {
-
+            finish();
         } else if (v == btnPre) {
-
+            setPreVideo();
         } else if (v == btnStartPause) {
             if (vv.isPlaying()) {
                 vv.pause();//暂停
@@ -230,12 +260,83 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             }
 
         } else if (v == btnNext) {
-
+            setNextVideo();
         } else if (v == btnSwitchScreen) {
+            vv.setVideoURI(uri);
+        }
+        setButtonStatus();
+    }
 
+    private void setButtonStatus() {
+        if(mediaItems != null && mediaItems.size() > 0) {
+            //有视频播放
+            setEnable(true);
+            if(position == 0) {
+                //上一个不可点击
+                btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+                btnPre.setEnabled(false);
+            }
+            
+            if(position == mediaItems.size() - 1) {
+
+                btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+                btnNext.setEnabled(false);
+            }
+        }else if(uri != null) {
+            //上一个和下一个不可用点击
+            setEnable(false);
+        }
+
+
+    }
+
+    private void setEnable(boolean b) {
+        if(b) {
+            //上一个和下一个都可以点击
+            btnPre.setBackgroundResource(R.drawable.btn_pre_selector);
+            btnNext.setBackgroundResource(R.drawable.btn_next_selector);
+        }else {
+            //上一个和下一个灰色，并且不可用点击
+            btnPre.setBackgroundResource(R.drawable.btn_pre_gray);
+            btnNext.setBackgroundResource(R.drawable.btn_next_gray);
+
+        }
+
+        btnPre.setEnabled(b);
+        btnNext.setEnabled(b);
+    }
+
+    private void setPreVideo() {
+        position--;
+        if(position >= 0) {
+            //还是在列表范围内
+            MediaItem mediaItem = mediaItems.get(position);
+            vv.setVideoPath(mediaItem.getData());
+            tvName.setText(mediaItem.getName());
+
+            //设置按键状态
+            setButtonStatus();
         }
     }
 
+    private void setNextVideo() {
+        position++;
+        if(position < mediaItems.size()) {
+            //还是在列表范围内
+            MediaItem mediaItem = mediaItems.get(position);
+            vv.setVideoPath(mediaItem.getData());
+            tvName.setText(mediaItem.getName());
+
+            //设置按键状态
+            setButtonStatus();
+
+        }else {
+            //播放最后一个
+            Toast.makeText(SystemVideoPlayerActivity.this, "退出播放器", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+    }
 
 
     private void setBatteryView(int level) {
