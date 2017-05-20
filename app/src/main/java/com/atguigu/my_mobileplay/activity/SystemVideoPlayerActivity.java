@@ -3,6 +3,8 @@ package com.atguigu.my_mobileplay.activity;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.utils.Utils;
 
 public class SystemVideoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
     private VideoView vv;
@@ -35,6 +38,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private Button btnStartPause;
     private Button btnNext;
     private Button btnSwitchScreen;
+
+    private static final int PROGRESS = 0;
+    private Utils utils;
 
     private void findViews() {
         setContentView(R.layout.activity_system_video_player);
@@ -72,6 +78,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         //初始化控件
         vv = (VideoView) findViewById(R.id.vv);
         findViews();
+        utils = new Utils();
 
         uri = getIntent().getData();
 
@@ -84,8 +91,8 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             /**
              * 
              * @param seekBar
-             * @param i
-             * @param b true:用户拖动改变的，false:系统更新改变的
+             * @param progress
+             * @param fromUser true:用户拖动改变的，false:系统更新改变的
              */
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -107,6 +114,29 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         });
     }
 
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case PROGRESS :
+                    //得到当前进度
+                    int currentPosition = vv.getCurrentPosition();
+                    //让seekBar进度更新
+                    seekbarVideo.setProgress(currentPosition);
+
+                    //设置文本当 前的播放进入
+                    tvCurrentTime.setText(utils.stringForTime(currentPosition));
+
+                    //循环发消息
+                    sendEmptyMessageDelayed(PROGRESS,1000);
+                    break;
+            }
+
+        }
+    };
+
     private void setListener() {
         vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -114,8 +144,13 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 //得到视频的总时长
                 int duration = vv.getDuration();
                 seekbarVideo.setMax(duration);
+                //设置文本的总时间
+                tvDuration.setText(utils.stringForTime(duration));
 
                 vv.start();//开始播放
+
+                //发消息更新进度
+                handler.sendEmptyMessage(PROGRESS);
             }
         });
         //当播放出错的时候调用
@@ -166,5 +201,12 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         } else if (v == btnSwitchScreen) {
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacksAndMessages(null);
     }
 }
