@@ -318,10 +318,43 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         maxVoice = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
     }
 
+
+    private float touchRange;//可移动的最大距离
+    private float downY ;//手指按下时Y轴坐标
+    private int currVol;//当前的音量
+    //currentVoice当前音量
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //把事件交给手势识别器
         detector.onTouchEvent(event);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN :
+                downY = event.getY();
+                touchRange = Math.min(screenWidth,screenHeight);//得到收滑动的范围
+                currVol = am.getStreamVolume(AudioManager.STREAM_MUSIC);//得到当前的音量
+
+                handler.removeMessages(HIDE_MEDIACONTROLLER);
+                break;
+            case MotionEvent.ACTION_MOVE :
+                float newY = event.getY();//来到新的坐标
+                float distanceY = downY - newY;//移动的距离
+                //Math.abs(distanceY)/maxY;滑动距离的百分比
+                //将要改变的音"量";要改变的声音 = (滑动的距离 / 总距离)*最大音量
+                float newVoice = distanceY / touchRange * maxVoice;
+                //得到最终要改变为的音量
+                float lastVoice = Math.min(Math.max(newVoice + currVol, 0), maxVoice);
+                if(newVoice != 0) {
+                    updateVoiceProgress((int) lastVoice);
+                }
+
+                break;
+            case MotionEvent.ACTION_UP :
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+
+                break;
+        }
+
 
         return super.onTouchEvent(event);
 
