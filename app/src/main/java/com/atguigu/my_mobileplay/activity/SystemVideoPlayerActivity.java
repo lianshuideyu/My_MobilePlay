@@ -66,6 +66,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private GestureDetector detector;
 
     private void findViews() {
+
         setContentView(R.layout.activity_system_video_player);
         llTop = (LinearLayout) findViewById(R.id.ll_top);
         tvName = (TextView) findViewById(R.id.tv_name);
@@ -94,12 +95,42 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         btnSwitchScreen.setOnClickListener(this);
     }
 
+    private Handler handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case PROGRESS:
+                    //得到当前进度
+                    int currentPosition = vv.getCurrentPosition();
+                    //让seekBar进度更新
+                    seekbarVideo.setProgress(currentPosition);
+
+                    //设置文本当 前的播放进入
+                    tvCurrentTime.setText(utils.stringForTime(currentPosition));
+
+                    //得到系统时间
+                    tvSystemTime.setText(getSystemTime());
+
+                    //循环发消息
+                    sendEmptyMessageDelayed(PROGRESS, 1000);
+                    break;
+                case HIDE_MEDIACONTROLLER:
+                    //隐藏控制面板
+                    hideMediaController();
+                    break;
+
+            }
+            //默认隐藏控制面板
+            hideMediaController();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_system_video_player);
-        //初始化控件
-        vv = (VideoView) findViewById(R.id.vv);
+
         findViews();
         utils = new Utils();
 
@@ -114,32 +145,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
         setData();
 
-        //设置seekbar状态的监听
-        seekbarVideo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            /**
-             *
-             * @param seekBar
-             * @param progress
-             * @param fromUser true:用户拖动改变的，false:系统更新改变的
-             */
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //如果拖动了
-                if (fromUser) {
-                    vv.seekTo(progress);
-                }
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                handler.removeMessages(HIDE_MEDIACONTROLLER);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,3000);
-            }
-        });
     }
 
     private void getData() {
@@ -203,7 +209,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                     handler.removeMessages(HIDE_MEDIACONTROLLER);
                 }else  {
                     showMediaController();
-                    handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,3000);
+                    handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,8000);
                 }
 
                 return super.onSingleTapConfirmed(e);
@@ -224,7 +230,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     /**
      * 是否显示控制面板
      */
-    private boolean isShowMediaController;
+    private boolean isShowMediaController = false;
 
     //隐藏控制面板
     private void hideMediaController() {
@@ -240,38 +246,6 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         isShowMediaController = true;
     }
 
-
-    private Handler handler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case PROGRESS:
-                    //得到当前进度
-                    int currentPosition = vv.getCurrentPosition();
-                    //让seekBar进度更新
-                    seekbarVideo.setProgress(currentPosition);
-
-                    //设置文本当 前的播放进入
-                    tvCurrentTime.setText(utils.stringForTime(currentPosition));
-
-                    //得到系统时间
-                    tvSystemTime.setText(getSystemTime());
-
-                    //循环发消息
-                    sendEmptyMessageDelayed(PROGRESS, 1000);
-                    break;
-                case HIDE_MEDIACONTROLLER:
-                    //隐藏控制面板
-                    hideMediaController();
-                    break;
-
-            }
-            //默认隐藏控制面板
-            hideMediaController();
-        }
-    };
 
 
 
@@ -319,6 +293,33 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         //vv.setVideoURI(uri);
         //设置控制面板
         //vv.setMediaController(new MediaController(this));
+
+        //设置seekbar状态的监听
+        seekbarVideo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            /**
+             *
+             * @param seekBar
+             * @param progress
+             * @param fromUser true:用户拖动改变的，false:系统更新改变的
+             */
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //如果拖动了
+                if (fromUser) {
+                    vv.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                handler.removeMessages(HIDE_MEDIACONTROLLER);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,8000);
+            }
+        });
     }
 
     @Override
@@ -340,7 +341,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         }
 
         handler.removeMessages(HIDE_MEDIACONTROLLER);
-        handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,3000);
+        handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,8000);
 
     }
 
