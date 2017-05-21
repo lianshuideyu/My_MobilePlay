@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_voice_selector" />
 
+
             <SeekBar
                 android:id="@+id/seekbar_voice"
                 android:layout_width="0dp"
@@ -68,7 +69,7 @@
                 android:minHeight="5dp"
                 android:progress="20"
                 android:progressDrawable="@drawable/progress_horizontal"
-                android:thumb="@drawable/progress_thumb" />
+                android:thumb="@drawable/progress_thumb"/>
 
             <Button
                 android:id="@+id/btn_switch_player"
