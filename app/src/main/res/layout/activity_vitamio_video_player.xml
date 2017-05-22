@@ -9,7 +9,7 @@
     tools:context=".activity.VitamioVideoPlayerActivity">
 
     <com.atguigu.my_mobileplay.view.VitamioVideoView
-        android:id="@+id/vv"
+        android:id="@+id/vv_Vitamio"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
