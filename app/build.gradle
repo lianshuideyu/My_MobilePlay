@@ -28,4 +28,7 @@ dependencies {
     compile 'junit:junit:4.12'
     compile project(path: ':vitamio')
     compile project(':vitamio')
+
+    compile 'org.xutils:xutils:3.5.0'
+    compile 'com.google.code.gson:gson:2.2.4'
 }

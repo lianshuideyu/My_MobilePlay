@@ -622,6 +622,13 @@ public class VitamioVideoPlayerActivity extends AppCompatActivity implements Vie
 //                        Toast.makeText(SystemVideoPlayerActivity.this, "拖动完成", Toast.LENGTH_SHORT).show();
 //                    }
 //                });
+
+                if(vv_Vitamio.isPlaying()){
+                    //设置暂停
+                    btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
+                }else {
+                    btnStartPause.setBackgroundResource(R.drawable.btn_start_selector);
+                }
             }
         });
 

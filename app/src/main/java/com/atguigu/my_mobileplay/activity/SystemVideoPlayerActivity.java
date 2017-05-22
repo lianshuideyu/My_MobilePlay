@@ -539,6 +539,19 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 //hideMediaController();
                 //设默认屏幕
                 setVideoType(DEFUALT_SCREEN);
+                mp.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                    @Override
+                    public void onSeekComplete(MediaPlayer mediaPlayer) {
+                        Toast.makeText(SystemVideoPlayerActivity.this, "拖动完成", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                if(vv.isPlaying()){
+                    //设置暂停
+                    btnStartPause.setBackgroundResource(R.drawable.btn_pause_selector);
+                }else {
+                    btnStartPause.setBackgroundResource(R.drawable.btn_start_selector);
+                }
             }
         });
         //当播放出错的时候调用
