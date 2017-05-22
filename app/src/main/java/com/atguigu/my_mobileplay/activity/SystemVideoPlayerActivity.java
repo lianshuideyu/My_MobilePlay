@@ -215,6 +215,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                         //缓存的进度条Progress
                         int secondaryProgress = totalBuffer / 100;
                         seekbarVideo.setSecondaryProgress(secondaryProgress);
+
+                        tvName.setText(uri.toString());
+
                     }else {
                         seekbarVideo.setSecondaryProgress(0);
                     }
