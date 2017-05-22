@@ -92,6 +92,11 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
     //private SeekBar sb_test;
 
+    /**
+     * 判断是否为网络资源
+     */
+    private boolean isNetUri;
+
     private void findViews() {
 
         setContentView(R.layout.activity_system_video_player);
@@ -193,6 +198,18 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
                     //得到系统时间
                     tvSystemTime.setText(getSystemTime());
+                    
+                    //设置视频缓存效果
+                    if(isNetUri) {
+                        int bufferPercentage = vv.getBufferPercentage();//缓存百分比
+                        //得到当前的缓存量
+                        int totalBuffer = bufferPercentage * seekbarVideo.getMax();
+                        //缓存的进度条Progress
+                        int secondaryProgress = totalBuffer / 100;
+                        seekbarVideo.setSecondaryProgress(secondaryProgress);
+                    }else {
+                        seekbarVideo.setSecondaryProgress(0);
+                    }
 
                     //循环发消息
                     sendEmptyMessageDelayed(PROGRESS, 1000);
@@ -242,9 +259,13 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             tvName.setText(mediaItem.getData());
             vv.setVideoPath(mediaItem.getData());
 
+            //缓存
+            isNetUri = utils.isNetUri(mediaItem.getData());
+
         }else if(uri != null) {
             //当只有一个播放内容的时候
             vv.setVideoURI(uri);
+            isNetUri = utils.isNetUri(uri.toString());
         }
         
     }
@@ -639,6 +660,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         if(position >= 0) {
             //还是在列表范围内
             MediaItem mediaItem = mediaItems.get(position);
+            //判断是否为网络资源
+            isNetUri = utils.isNetUri(mediaItem.getData());
+
             vv.setVideoPath(mediaItem.getData());
             tvName.setText(mediaItem.getName());
 
@@ -652,6 +676,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         if(position < mediaItems.size()) {
             //还是在列表范围内
             MediaItem mediaItem = mediaItems.get(position);
+            //判断是否为网络资源
+            isNetUri = utils.isNetUri(mediaItem.getData());
+
             vv.setVideoPath(mediaItem.getData());
             tvName.setText(mediaItem.getName());
 
