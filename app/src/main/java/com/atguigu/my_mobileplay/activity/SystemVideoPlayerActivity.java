@@ -96,6 +96,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
      * 判断是否为网络资源
      */
     private boolean isNetUri;
+    //缓冲的速度文本和进度
+    private LinearLayout ll_buffering;
+    private TextView tv_net_speed;
 
     private void findViews() {
 
@@ -117,6 +120,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         btnNext = (Button) findViewById(R.id.btn_next);
         btnSwitchScreen = (Button) findViewById(R.id.btn_switch_screen);
         vv = (VideoView) findViewById(R.id.vv);
+
+        ll_buffering = (LinearLayout) findViewById(R.id.ll_buffering);
+        tv_net_speed = (TextView) findViewById(R.id.tv_net_speed);
 
         //----------
         //sb_test = (SeekBar) findViewById(R.id.sb_test);
@@ -181,6 +187,8 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
         }
     }
 
+    private int preCurrentPosition;
+
     private Handler handler = new Handler() {
 
         @Override
@@ -209,6 +217,20 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                         seekbarVideo.setSecondaryProgress(secondaryProgress);
                     }else {
                         seekbarVideo.setSecondaryProgress(0);
+                    }
+
+                    if(isNetUri && vv.isPlaying()) {
+                        int duration = currentPosition - preCurrentPosition;
+                        if(duration < 500) {
+                            //卡顿
+                            ll_buffering.setVisibility(View.VISIBLE);
+                        }else {
+                            //不卡
+                            ll_buffering.setVisibility(View.GONE);
+
+                        }
+                        //不要忘记重新赋值
+                        preCurrentPosition = currentPosition;
                     }
 
                     //循环发消息
