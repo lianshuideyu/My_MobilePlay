@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context="com.atguigu.my_mobileplay.activity.SystemVideoPlayerActivity">
+    android:gravity="center"
+    tools:context=".activity.VitamioVideoPlayerActivity">
 
-    <com.atguigu.my_mobileplay.view.VideoView
+    <com.atguigu.my_mobileplay.view.VitamioVideoView
         android:id="@+id/vv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,7 +16,6 @@
 
     <include layout="@layout/media_controller" />
 
-    <!--进入播放界面的前的页面，有网速显示-->
     <LinearLayout
         android:id="@+id/ll_loading"
         android:layout_width="match_parent"
@@ -58,4 +58,5 @@
             android:text="正在缓冲....15kb/s"
             android:textColor="#ffffff" />
     </LinearLayout>
+
 </RelativeLayout>
