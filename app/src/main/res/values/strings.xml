@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyMobilePlay</string>
+    <string name="player_name">MyMobilePlay(系统推荐)</string>
+
 </resources>

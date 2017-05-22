@@ -323,6 +323,9 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
     private float touchRange;//可移动的最大距离
     private float downY ;//手指按下时Y轴坐标
     private int currVol;//当前的音量
+    //用于区别左右屏
+    private float downX;
+
     //currentVoice当前音量
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -331,6 +334,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN :
+                downX = event.getX();
                 downY = event.getY();
                 touchRange = Math.min(screenWidth,screenHeight);//得到收滑动的范围
                 currVol = am.getStreamVolume(AudioManager.STREAM_MUSIC);//得到当前的音量
@@ -342,12 +346,22 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                 float distanceY = downY - newY;//移动的距离
                 //Math.abs(distanceY)/maxY;滑动距离的百分比
                 //将要改变的音"量";要改变的声音 = (滑动的距离 / 总距离)*最大音量
-                float newVoice = distanceY / touchRange * maxVoice;
-                //得到最终要改变为的音量
-                float lastVoice = Math.min(Math.max(newVoice + currVol, 0), maxVoice);
-                if(newVoice != 0) {
-                    updateVoiceProgress((int) lastVoice);
+
+                if(downX > screenWidth /2) {
+                    //处理音量变化
+                    float newVoice = distanceY / touchRange * maxVoice;
+                    //得到最终要改变为的音量
+                    float lastVoice = Math.min(Math.max(newVoice + currVol, 0), maxVoice);
+
+                    if(newVoice != 0) {
+                        updateVoiceProgress((int) lastVoice);
+                    }
+                }else if(downX < screenWidth / 2) {
+                    //处理屏幕亮度调节
+
+
                 }
+
 
                 break;
             case MotionEvent.ACTION_UP :
@@ -370,12 +384,16 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
             updateVoiceProgress(currentVoice);
             handler.removeMessages(HIDE_MEDIACONTROLLER);
             handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+
+            return true;//目的:不要用系统的音量条，用自己
         }else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             //音量加
             currentVoice++;
             updateVoiceProgress(currentVoice);
             handler.removeMessages(HIDE_MEDIACONTROLLER);
             handler.sendEmptyMessageDelayed(HIDE_MEDIACONTROLLER,4000);
+
+            return true;
         }
 
 
