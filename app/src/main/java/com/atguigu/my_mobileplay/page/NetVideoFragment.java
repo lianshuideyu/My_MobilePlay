@@ -14,6 +14,8 @@ import com.atguigu.my_mobileplay.adapter.NetVideoAdapter;
 import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.domain.MoveInfo;
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
 import com.google.gson.Gson;
 
 import org.xutils.common.Callback;
@@ -38,12 +40,37 @@ public class NetVideoFragment extends BaseFragment {
 
     private ArrayList<MediaItem> mediaItems;
 
+    private MaterialRefreshLayout refresh;
+
+    private boolean isLoadMore = false;
+
     @Override
     public View initView() {
         Log.e("TAG", "NetVideoPager-initView");
         View view = View.inflate(context, R.layout.fragment_net_video_pager, null);
         tv_nodata = (TextView) view.findViewById(R.id.tv_nodata);
         lv = (ListView) view.findViewById(R.id.lv);
+        refresh = (MaterialRefreshLayout) view.findViewById(R.id.refresh);
+
+        //设置刷新
+        refresh.setMaterialRefreshListener(new MaterialRefreshListener() {
+            //下拉刷新
+            @Override
+            public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+                isLoadMore = false;
+                getDataFromNet();
+            }
+
+            //上拉刷新，加载更多数据
+            @Override
+            public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
+                super.onRefreshLoadMore(materialRefreshLayout);
+
+                isLoadMore = true;
+                getMoreDataFromNet();
+            }
+        });
+
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -54,14 +81,43 @@ public class NetVideoFragment extends BaseFragment {
 //                startActivity(intent);
 
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("videolist",mediaItems);
-                intent.putExtra("position",position);
+                bundle.putSerializable("videolist", mediaItems);
+                intent.putExtra("position", position);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
 
         return view;
+    }
+
+    private void getMoreDataFromNet() {
+        //配置联网请求地址
+        final RequestParams request = new RequestParams("http://api.m.mtime.cn/PageSubArea/TrailerList.api");
+        x.http().get(request, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                //联网得到数据
+                Log.e("TAG", "xUtils联网成功==" + result);
+                refresh.finishRefreshLoadMore();
+                processData(result);
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                Log.e("TAG", "xUtils联网失败==" + ex.getMessage());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 
     @Override
@@ -81,6 +137,7 @@ public class NetVideoFragment extends BaseFragment {
             public void onSuccess(String result) {
                 //联网得到数据
                 Log.e("TAG", "xUtils联网成功==" + result);
+                refresh.finishRefresh();//联网成功后刷新结束
                 processData(result);
             }
 
@@ -109,25 +166,41 @@ public class NetVideoFragment extends BaseFragment {
      */
     private void processData(String json) {
         MoveInfo moveInfo = new Gson().fromJson(json, MoveInfo.class);
-        datas = moveInfo.getTrailers();
 
-        //用于将此集合传入播放器
-        mediaItems = new ArrayList<>();
-        Iterator<MoveInfo.TrailersBean> iterator = datas.iterator();
-        while (iterator.hasNext()){
-            MoveInfo.TrailersBean next = iterator.next();
-            mediaItems.add(new MediaItem(next.getMovieName(),next.getUrl()));
+        if (!isLoadMore) {//下拉刷新
+            datas = moveInfo.getTrailers();
 
-        }
+            //用于将此集合传入播放器
+            mediaItems = new ArrayList<>();
+            Iterator<MoveInfo.TrailersBean> iterator = datas.iterator();
+            while (iterator.hasNext()) {
+                MoveInfo.TrailersBean next = iterator.next();
+                mediaItems.add(new MediaItem(next.getMovieName(), next.getUrl()));
 
+            }
 
-        if (datas != null && datas.size() > 0) {
-            tv_nodata.setVisibility(View.GONE);
-            //有数据-适配器
-            adapter = new NetVideoAdapter(context, datas);
-            lv.setAdapter(adapter);
-        } else {
-            tv_nodata.setVisibility(View.VISIBLE);
+            if (datas != null && datas.size() > 0) {
+                tv_nodata.setVisibility(View.GONE);
+                //有数据-适配器
+                adapter = new NetVideoAdapter(context, datas);
+                lv.setAdapter(adapter);
+            } else {
+                tv_nodata.setVisibility(View.VISIBLE);
+            }
+        } else {//上拉加载更多
+            //加载更多得到的数据新数据
+            List<MoveInfo.TrailersBean> trailersBeanList = moveInfo.getTrailers();
+            //要传入播放器的
+            for (int i = 0; i < trailersBeanList.size(); i++) {
+                MediaItem mediaItem = new MediaItem(trailersBeanList.get(i).getMovieName(),
+                        trailersBeanList.get(i).getUrl());
+                mediaItems.add(mediaItem);
+
+            }
+            //加入到原来集合的数据
+            datas.addAll(trailersBeanList);
+            //刷新适配器
+            adapter.notifyDataSetChanged();
         }
     }
 }
