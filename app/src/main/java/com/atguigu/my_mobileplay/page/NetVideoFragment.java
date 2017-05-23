@@ -1,7 +1,7 @@
 package com.atguigu.my_mobileplay.page;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.atguigu.my_mobileplay.R;
 import com.atguigu.my_mobileplay.activity.SystemVideoPlayerActivity;
 import com.atguigu.my_mobileplay.adapter.NetVideoAdapter;
+import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.domain.MoveInfo;
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
 import com.google.gson.Gson;
@@ -19,6 +20,8 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -31,6 +34,10 @@ public class NetVideoFragment extends BaseFragment {
     private ListView lv;
     private TextView tv_nodata;
 
+    private List<MoveInfo.TrailersBean> datas;
+
+    private ArrayList<MediaItem> mediaItems;
+
     @Override
     public View initView() {
         Log.e("TAG", "NetVideoPager-initView");
@@ -41,9 +48,15 @@ public class NetVideoFragment extends BaseFragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MoveInfo.TrailersBean item = (MoveInfo.TrailersBean) adapter.getItem(position);
+                MoveInfo.TrailersBean item = adapter.getItem(position);
                 Intent intent = new Intent(context, SystemVideoPlayerActivity.class);
-                intent.setDataAndType(Uri.parse(item.getUrl()), "video/*");
+//                intent.setDataAndType(Uri.parse(item.getUrl()), "video/*");
+//                startActivity(intent);
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("videolist",mediaItems);
+                intent.putExtra("position",position);
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
@@ -96,7 +109,17 @@ public class NetVideoFragment extends BaseFragment {
      */
     private void processData(String json) {
         MoveInfo moveInfo = new Gson().fromJson(json, MoveInfo.class);
-        List<MoveInfo.TrailersBean> datas = moveInfo.getTrailers();
+        datas = moveInfo.getTrailers();
+
+        //用于将此集合传入播放器
+        mediaItems = new ArrayList<>();
+        Iterator<MoveInfo.TrailersBean> iterator = datas.iterator();
+        while (iterator.hasNext()){
+            MoveInfo.TrailersBean next = iterator.next();
+            mediaItems.add(new MediaItem(next.getMovieName(),next.getUrl()));
+
+        }
+
 
         if (datas != null && datas.size() > 0) {
             tv_nodata.setVisibility(View.GONE);

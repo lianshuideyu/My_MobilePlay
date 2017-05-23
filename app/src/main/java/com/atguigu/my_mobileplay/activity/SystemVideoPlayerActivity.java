@@ -255,13 +255,13 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                         int secondaryProgress = totalBuffer / 100;
                         seekbarVideo.setSecondaryProgress(secondaryProgress);
 
-                        tvName.setText(uri.toString());
+                        //tvName.setText(uri.toString());
 
                     }else {
                         seekbarVideo.setSecondaryProgress(0);
                     }
 
-                    if(isNetUri && vv.isPlaying()) {
+                    /*if(isNetUri && vv.isPlaying()) {
                         int duration = currentPosition - preCurrentPosition;
                         if(duration < 500) {
                             //卡顿
@@ -273,7 +273,7 @@ public class SystemVideoPlayerActivity extends AppCompatActivity implements View
                         }
                         //不要忘记重新赋值
                         preCurrentPosition = currentPosition;
-                    }
+                    }*/
 
                     //循环发消息
                     sendEmptyMessageDelayed(PROGRESS, 1000);

@@ -13,6 +13,18 @@ public class MediaItem implements Serializable{
     private long size;//文件大小
     private String data;
 
+    public MediaItem(String name, long duration, long size, String data) {
+        this.name = name;
+        this.duration = duration;
+        this.size = size;
+        this.data = data;
+    }
+
+    public MediaItem(String name, String data) {
+        this.name = name;
+        this.data = data;
+    }
+
     public String getName() {
         return name;
     }
@@ -55,12 +67,7 @@ public class MediaItem implements Serializable{
                 '}';
     }
 
-    public MediaItem(String name, long duration, long size, String data) {
-        this.name = name;
-        this.duration = duration;
-        this.size = size;
-        this.data = data;
-    }
+
 
 
 }
