@@ -8,6 +8,7 @@
     tools:context="com.atguigu.my_mobileplay.activity.AudioPlayerActivity">
 
     <RelativeLayout
+        android:id="@+id/rl_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
@@ -40,12 +41,14 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/ll_bottom"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/tv_time"
             android:gravity="right"
             android:textColor="#ffffff"
             android:text="00:00/00:00"
@@ -53,6 +56,7 @@
             android:layout_height="wrap_content" />
 
         <SeekBar
+            android:id="@+id/seekbar_audio"
             android:progress="20"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -62,22 +66,32 @@
             android:layout_height="wrap_content">
 
             <Button
+                android:background="@drawable/btn_playmode_normal_selector"
+                android:id="@+id/btn_playmode"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <Button
+                android:background="@drawable/btn_pre_audio_selector"
+                android:id="@+id/btn_pre"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <Button
+                android:background="@drawable/btn_audio_pause_selector"
+                android:id="@+id/btn_start_pause"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <Button
+                android:background="@drawable/btn_audio_next_selector"
+                android:id="@+id/btn_next"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <Button
+                android:background="@drawable/btn_lyric_selector"
+                android:id="@+id/btn_lyric"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
