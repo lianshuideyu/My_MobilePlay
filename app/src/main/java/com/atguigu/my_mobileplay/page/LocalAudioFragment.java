@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.atguigu.my_mobileplay.R;
-import com.atguigu.my_mobileplay.activity.SystemVideoPlayerActivity;
+import com.atguigu.my_mobileplay.activity.AudioPlayerActivity;
 import com.atguigu.my_mobileplay.adapter.LocalVideoAdapter;
 import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
@@ -45,7 +45,7 @@ public class LocalAudioFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MediaItem item = adapter.getItem(i);
 
-                Intent intent = new Intent(context, SystemVideoPlayerActivity.class);
+                Intent intent = new Intent(context, AudioPlayerActivity.class);
 //                intent.setDataAndType(Uri.parse(item.getData()),"video/*");
 //                startActivity(intent);
                 //传递视频列表过去

@@ -3,22 +3,22 @@
     package="com.atguigu.my_mobileplay">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <!--
      android:configChanges="keyboardHidden|orientation|screenSize"
     解决横竖屏，屏幕大小切换等生命周期重新执行的问题
     -->
-
-    <!--在应用开启时最先加载它
+    <!--
+在应用开启时最先加载它
     android:name="com.atguigu.my_mobileplay.app.MyApplication"
     -->
     <application
-        android:name="com.atguigu.my_mobileplay.app.MyApplication"
+        android:name=".app.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/icon2"
         android:label="@string/app_name"
@@ -39,9 +39,7 @@
             android:name=".activity.SystemVideoPlayerActivity"
             android:label="@string/player_name"
             android:screenOrientation="landscape"
-            android:theme="@style/noAnimation_Theme"
-            >
-
+            android:theme="@style/noAnimation_Theme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -52,6 +50,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="video/*" />
@@ -70,7 +69,6 @@
                 <data android:mimeType="video/3gpp" />
                 <data android:mimeType="video/3gpp2" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -286,16 +284,15 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name=".activity.VitamioVideoPlayerActivity"
-            android:launchMode="singleTask"
+        <activity
+            android:name=".activity.VitamioVideoPlayerActivity"
             android:label="@string/player_name2"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape"
-            android:theme="@style/noAnimation_Theme">
+            android:theme="@style/noAnimation_Theme"></activity>
 
-        </activity>
+        <activity android:name=".activity.AudioPlayerActivity"></activity>
     </application>
 
 </manifest>
