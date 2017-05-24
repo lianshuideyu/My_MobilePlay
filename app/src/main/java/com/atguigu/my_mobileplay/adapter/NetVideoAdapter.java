@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.atguigu.my_mobileplay.R;
 import com.atguigu.my_mobileplay.domain.MoveInfo;
 import com.atguigu.my_mobileplay.utils.Utils;
+import com.squareup.picasso.Picasso;
 
 import org.xutils.image.ImageOptions;
-import org.xutils.x;
 
 import java.util.List;
 
@@ -79,7 +79,16 @@ public class NetVideoAdapter extends BaseAdapter {
         viewHolder.tv_size.setText(trailersBean.getVideoLength() + "秒");
         viewHolder.tv_duration.setText(trailersBean.getVideoTitle());
 
-        x.image().bind(viewHolder.iv_icon, trailersBean.getCoverImg(), imageOptions);
+        //xUtil请求图片
+        //x.image().bind(viewHolder.iv_icon, trailersBean.getCoverImg(), imageOptions);
+
+        //Picasso加载图片，Picasso自带三级缓存
+        Picasso.with(context)
+                .load(trailersBean.getCoverImg())
+                .placeholder(R.drawable.video_default)
+                .error(R.drawable.video_default)
+                .into(viewHolder.iv_icon);
+
 
         return convertView;
     }
