@@ -1,7 +1,10 @@
 package com.atguigu.my_mobileplay.page;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,9 +47,15 @@ public class NetVideoFragment extends BaseFragment {
 
     private boolean isLoadMore = false;
 
+    //缓存
+    private SharedPreferences sp;
+    public static final String uri = "http://api.m.mtime.cn/PageSubArea/TrailerList.api";
+
     @Override
     public View initView() {
         Log.e("TAG", "NetVideoPager-initView");
+        sp = context.getSharedPreferences("atguiguMediaItems", Context.MODE_PRIVATE);
+
         View view = View.inflate(context, R.layout.fragment_net_video_pager, null);
         tv_nodata = (TextView) view.findViewById(R.id.tv_nodata);
         lv = (ListView) view.findViewById(R.id.lv);
@@ -101,6 +110,7 @@ public class NetVideoFragment extends BaseFragment {
                 Log.e("TAG", "xUtils联网成功==" + result);
                 refresh.finishRefreshLoadMore();
                 processData(result);
+
             }
 
             @Override
@@ -124,6 +134,15 @@ public class NetVideoFragment extends BaseFragment {
     public void initData() {
         Log.e("TAG", "NetVideoPager-initData");
         super.initData();
+
+        //直接先获取缓存数据，当联网成功后替代缓存的数据
+        String saveJson = sp.getString(uri, "");
+        if(!TextUtils.isEmpty(saveJson)) {
+            //解析缓存的数据
+            processData(saveJson);
+            Log.e("TAG","解析缓存的数据=="+saveJson);
+        }
+
         getDataFromNet();
 
     }
@@ -139,6 +158,12 @@ public class NetVideoFragment extends BaseFragment {
                 Log.e("TAG", "xUtils联网成功==" + result);
                 refresh.finishRefresh();//联网成功后刷新结束
                 processData(result);
+
+                //缓存
+                if(result != null) {
+                    SharedPreferences.Editor edit = sp.edit();
+                    edit.putString(uri,result).commit();
+                }
             }
 
             @Override
