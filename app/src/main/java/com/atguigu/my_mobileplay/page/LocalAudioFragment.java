@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -49,11 +48,12 @@ public class LocalAudioFragment extends BaseFragment {
 //                intent.setDataAndType(Uri.parse(item.getData()),"video/*");
 //                startActivity(intent);
                 //传递视频列表过去
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("videolist",mediaItems);
+                //Bundle bundle = new Bundle();
+                //bundle.putSerializable("videolist",mediaItems);
                 intent.putExtra("position",i);
-                intent.putExtras(bundle);
+                //intent.putExtras(bundle);
                 startActivity(intent);
+                Log.e("TAG","LocalAudioFragment---------startAudioPlayerActivity");
             }
         });
         return view;

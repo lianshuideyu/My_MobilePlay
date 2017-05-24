@@ -57,9 +57,14 @@
 
         <SeekBar
             android:id="@+id/seekbar_audio"
-            android:progress="20"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:maxHeight="5dp"
+            android:minHeight="5dp"
+            android:progress="20"
+            android:progressDrawable="@drawable/progress_horizontal_audio"
+            android:thumb="@drawable/seek_thumb"/>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
