@@ -120,7 +120,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     }
 
     private class MyReceiver extends BroadcastReceiver{
-
+        /**
+         * 接收到广播时回调该方法
+         * @param context
+         * @param intent
+         */
         @Override
         public void onReceive(Context context, Intent intent) {
             //主线程

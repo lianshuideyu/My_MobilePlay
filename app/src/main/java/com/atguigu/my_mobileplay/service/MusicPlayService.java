@@ -171,8 +171,8 @@ public class MusicPlayService extends Service {
             if (position < mediaItems.size()) {
                 mediaItem = mediaItems.get(position);
 
-                //如果不为空释放之前的播放的资源
                 if (mediaPlayer != null) {
+                    //如果不为空释放之前的播放的资源
                     mediaPlayer.reset();
                     mediaPlayer = null;
                 }
@@ -187,7 +187,8 @@ public class MusicPlayService extends Service {
                     mediaPlayer.setOnErrorListener(new MyOnErrorListener());
                     mediaPlayer.setOnCompletionListener(new MyOnCompletionListener());
 
-                    //准备
+                    //准备,异步的准备,(它也有同步的准备方法，当联网是异步更好)
+                    //视频播放时也需要调用准备方法，只不过videoView已经封装好
                     mediaPlayer.prepareAsync();
                 } catch (IOException e) {
                     e.printStackTrace();
