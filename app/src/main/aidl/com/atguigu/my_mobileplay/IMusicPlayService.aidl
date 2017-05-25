@@ -46,4 +46,8 @@ interface IMusicPlayService {
                   //是否在播放
                  boolean isPlaying();
 
+                 //播放模式
+                 int getPlaymode();
+                 void setPlaymode(int playmode);
+
 }

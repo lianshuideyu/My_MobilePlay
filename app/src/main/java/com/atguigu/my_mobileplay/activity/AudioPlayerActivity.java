@@ -70,9 +70,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
                     e.printStackTrace();
                 }
             }
-
         }
-
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
 
@@ -207,7 +205,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if ( v == btnPlaymode ) {
 
+            setPlayMode();
         } else if ( v == btnPre ) {
+            try {
+                service.pre();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
 
         } else if ( v == btnStartPause ) {
             try {
@@ -227,10 +231,54 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
             }
 
         } else if ( v == btnNext ) {
+            try {
+                service.next();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
 
         } else if ( v == btnLyric ) {
             
         }
+    }
+
+    private void setPlayMode() {
+
+        try {
+            int playmode = service.getPlaymode();
+            if(playmode == MusicPlayService.REPEAT_NORMAL) {
+                playmode = MusicPlayService.REPEAT_SINGLE;
+            }else if (playmode == MusicPlayService.REPEAT_SINGLE) {
+                playmode = MusicPlayService.REPEAT_ALL;
+            } else if (playmode == MusicPlayService.REPEAT_ALL) {
+                playmode = MusicPlayService.REPEAT_NORMAL;
+            }
+            //将播放模式保存到服务中
+            service.setPlaymode(playmode);
+            //设置默认按键背景
+            setButtonImage();
+            
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setButtonImage() {
+        try {
+            //从服务的到播放模式
+            int playmode = service.getPlaymode();
+            if (playmode == MusicPlayService.REPEAT_NORMAL) {
+                btnPlaymode.setBackgroundResource(R.drawable.btn_playmode_normal_selector);
+            } else if (playmode == MusicPlayService.REPEAT_SINGLE) {
+                btnPlaymode.setBackgroundResource(R.drawable.btn_playmode_single_selector);
+            } else if (playmode == MusicPlayService.REPEAT_ALL) {
+                btnPlaymode.setBackgroundResource(R.drawable.btn_playmode_all_selector);
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

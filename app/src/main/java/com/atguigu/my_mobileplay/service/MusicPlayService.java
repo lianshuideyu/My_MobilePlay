@@ -102,6 +102,16 @@ public class MusicPlayService extends Service {
         public boolean isPlaying() throws RemoteException {
             return mediaPlayer.isPlaying();
         }
+
+        @Override
+        public int getPlaymode() throws RemoteException {
+            return service.getPlaymode();
+        }
+
+        @Override
+        public void setPlaymode(int playmode) throws RemoteException {
+            service.setPlaymode(playmode);
+        }
     };
 
 
@@ -116,6 +126,27 @@ public class MusicPlayService extends Service {
     public static final String OPEN_COMPLETE = "com.atguigu.mobileplayer.OPEN_COMPLETE";
     //通知栏管理对象
     private NotificationManager nm;
+
+
+    /**
+     * 顺序播放
+     */
+    public static final int REPEAT_NORMAL = 1;
+
+    /**
+     * 单曲循环播放
+     */
+    public static final int REPEAT_SINGLE = 2;
+
+    /**
+     * 全部循环播放
+     */
+    public static final int REPEAT_ALL = 3;
+
+    /**
+     * 播放模式
+     */
+    private int playmode = REPEAT_NORMAL;
 
     @Override
     public void onCreate() {
@@ -172,6 +203,22 @@ public class MusicPlayService extends Service {
         return stub;
     }
 
+    /**
+     * 得到播放模式
+     * @return
+     */
+    public int getPlaymode() {
+        return playmode;
+    }
+
+    /**
+     * 设置播放模式
+     * @param playmode
+     */
+    public void setPlaymode(int playmode) {
+        this.playmode = playmode;
+    }
+
     //根据文职打开音频
     private void openAudio(int position) {
         this.position = position;
@@ -207,9 +254,7 @@ public class MusicPlayService extends Service {
 
         } else {
             Toast.makeText(MusicPlayService.this, "音频还没有加载完成", Toast.LENGTH_SHORT).show();
-
         }
-
     }
 
     //开始播放
