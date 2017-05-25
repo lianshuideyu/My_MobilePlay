@@ -48,6 +48,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     private MyReceiver receiver;
     private Utils utils;
     private final  static  int PROGRESS = 0;
+
+    private boolean notification;
     //链接好服务后的回调
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -55,7 +57,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
             service = IMusicPlayService.Stub.asInterface(iBinder);
             if(service != null) {
                 try {
-                    service.openAudio(position);
+                    if(notification) {
+                        //什么也不用做,但需从新加载一下数据
+                        setViewData();//加载的还是当前服务所携带的信息
+
+                    }else {
+                        //如果是从通知栏点击跳转来的那么position默认为0；
+                        service.openAudio(position);
+                    }
+
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -184,7 +194,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void getData() {
-        position = getIntent().getIntExtra("position", 0);
+        //进来默认为false
+        notification = getIntent().getBooleanExtra("notification", false);
+        if(!notification) {
+            //如果不是从通知栏来的，则走这里,默认是从本地音频列表进来的
+            position = getIntent().getIntExtra("position", 0);
+        }
+
     }
 
     @Override

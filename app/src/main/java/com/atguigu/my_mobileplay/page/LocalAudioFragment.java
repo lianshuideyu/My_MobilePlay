@@ -51,6 +51,7 @@ public class LocalAudioFragment extends BaseFragment {
                 //Bundle bundle = new Bundle();
                 //bundle.putSerializable("videolist",mediaItems);
                 intent.putExtra("position",i);
+                intent.putExtra("notification",false);//是否来自状态栏
                 //intent.putExtras(bundle);
                 startActivity(intent);
                 Log.e("TAG","LocalAudioFragment---------startAudioPlayerActivity");

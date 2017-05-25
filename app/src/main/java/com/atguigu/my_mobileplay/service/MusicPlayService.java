@@ -1,19 +1,26 @@
 package com.atguigu.my_mobileplay.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.atguigu.my_mobileplay.IMusicPlayService;
+import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.activity.AudioPlayerActivity;
 import com.atguigu.my_mobileplay.domain.MediaItem;
 
 import java.io.IOException;
@@ -40,6 +47,7 @@ public class MusicPlayService extends Service {
             service.openAudio(position);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void start() throws RemoteException {
             service.start();
@@ -106,6 +114,8 @@ public class MusicPlayService extends Service {
     private MediaItem mediaItem;
 
     public static final String OPEN_COMPLETE = "com.atguigu.mobileplayer.OPEN_COMPLETE";
+    //通知栏管理对象
+    private NotificationManager nm;
 
     @Override
     public void onCreate() {
@@ -203,13 +213,30 @@ public class MusicPlayService extends Service {
     }
 
     //开始播放
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void start() {
         mediaPlayer.start();
+        //开始播放时开启通知栏效果
+        nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        Intent intent = new Intent(this, AudioPlayerActivity.class);
+        intent.putExtra("notification",true);//是否来自状态栏
+
+        PendingIntent pi = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notifation = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.notification_music_playing)
+                .setContentTitle("音乐汇")
+                .setContentText("正在播放："+getAudioName())
+                .setContentIntent(pi)
+                .build();
+        nm.notify(1,notifation);
     }
 
     //暂停
     private void pause() {
         mediaPlayer.pause();
+        //暂停时取消通知，取消通知栏
+        nm.cancel(1);
     }
 
     //得到歌手名字
@@ -253,6 +280,7 @@ public class MusicPlayService extends Service {
     }
 
     private class MyOnPreparedListener implements MediaPlayer.OnPreparedListener {
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
             //发广播
