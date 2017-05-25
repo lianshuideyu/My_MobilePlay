@@ -9,6 +9,9 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
     <!--
      android:configChanges="keyboardHidden|orientation|screenSize"
     解决横竖屏，屏幕大小切换等生命周期重新执行的问题

@@ -16,6 +16,8 @@ import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +34,9 @@ import java.util.ArrayList;
  */
 
 public class MusicPlayService extends Service {
+    //监听来电状态，是否暂停音乐
+    private TelephonyManager telephonyManager;
+    private PhoneStateListener listener;//电话状态监听
 
     //aidl文件生成的类
     private IMusicPlayService.Stub stub = new IMusicPlayService.Stub() {
@@ -164,9 +169,59 @@ public class MusicPlayService extends Service {
         //每次进来读取存储的模式
         playmode = sp.getInt("playmode",getPlaymode());
 
+        phoneListener();
+
         getData();
 
         Log.e("TAG", "MusicPlayService--onCreate()" );
+    }
+
+    private void phoneListener() {
+        //注册监听电话服务状态
+        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+
+        listener = new PhoneStateListener(){
+            /**
+             * @param state 电话状态
+             *  @see TelephonyManager#CALL_STATE_IDLE 空闲状态
+             * @see TelephonyManager#CALL_STATE_RINGING 响铃状态
+             * @see TelephonyManager#CALL_STATE_OFFHOOK 通话状态
+             * @param incomingNumber 播打进来的电话号码
+             */
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                super.onCallStateChanged(state, incomingNumber);
+
+                switch (state) {
+                    case TelephonyManager.CALL_STATE_IDLE:
+                        Log.e("TAG", "空闲状态");
+                        Toast.makeText(MusicPlayService.this, "空闲状态", Toast.LENGTH_SHORT).show();
+
+                        //电话再次空闲则播放音乐
+                        if(mediaPlayer != null) {
+                            start();
+                        }
+
+                        break;
+                    case TelephonyManager.CALL_STATE_RINGING:
+                        Log.e("TAG", "响铃状态");
+                        Toast.makeText(MusicPlayService.this, "响铃状态", Toast.LENGTH_SHORT).show();
+
+                        pause();//如果有电话进入就暂停音乐
+
+                        break;
+                    case TelephonyManager.CALL_STATE_OFFHOOK:
+                        Log.e("TAG", "通话状态");
+                        Toast.makeText(MusicPlayService.this, "通话状态", Toast.LENGTH_SHORT).show();
+                        break;
+
+                }
+            }
+        };
+
+        //监听打电话状态
+        telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
     private void getData() {
@@ -483,5 +538,15 @@ public class MusicPlayService extends Service {
 
             next();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(telephonyManager != null) {
+            //取消监听
+            telephonyManager.listen(listener, PhoneStateListener.LISTEN_NONE);
+        }
+
     }
 }
