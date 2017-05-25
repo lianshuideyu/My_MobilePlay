@@ -239,7 +239,7 @@ public class MusicPlayService extends Service {
 
     //音频拖动
     private void seekTo(int position) {
-
+        mediaPlayer.seekTo(position);
     }
 
     //上一个
