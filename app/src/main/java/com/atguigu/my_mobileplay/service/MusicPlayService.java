@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -147,14 +148,25 @@ public class MusicPlayService extends Service {
      * 播放模式
      */
     private int playmode = REPEAT_NORMAL;
+    /**
+     * true:正常播放完成
+     * false:人为手动点击下一个
+     */
+    private boolean isCompletion = false;
+    private SharedPreferences sp;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e("TAG", "MusicPlayService--onCreate()");
         //最初被创建的时候
         //在这里可以接收数据
+        sp = getSharedPreferences("atguigu",MODE_PRIVATE);
+        //每次进来读取存储的模式
+        playmode = sp.getInt("playmode",getPlaymode());
+
         getData();
+
+        Log.e("TAG", "MusicPlayService--onCreate()" );
     }
 
     private void getData() {
@@ -217,6 +229,8 @@ public class MusicPlayService extends Service {
      */
     public void setPlaymode(int playmode) {
         this.playmode = playmode;
+
+        sp.edit().putInt("playmode",playmode).commit();
     }
 
     //根据文职打开音频
@@ -247,6 +261,11 @@ public class MusicPlayService extends Service {
                     //准备,异步的准备,(它也有同步的准备方法，当联网是异步更好)
                     //视频播放时也需要调用准备方法，只不过videoView已经封装好
                     mediaPlayer.prepareAsync();
+
+                    if(playmode== MusicPlayService.REPEAT_SINGLE){
+                        isCompletion = false;
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -314,13 +333,115 @@ public class MusicPlayService extends Service {
         mediaPlayer.seekTo(position);
     }
 
-    //上一个
+    //下一个
     private void next() {
+        //根据不同的模式设置不同的下标
+        setNextPosition();
+
+        //根据不同的下标位置打开对应的音频并且播放，边界处理
+        openNextPosition();
+    }
+
+
+    //上一个
+    private void pre() {
+        //根据不同的模式设置不同的下标
+        setPrePosition();
+
+        //根据不同的下标位置打开对应的音频并且播放，边界处理
+        openPrePosition();
+    }
+
+    private void openPrePosition() {
+        int playmode = getPlaymode();
+        if(playmode == MusicPlayService.REPEAT_NORMAL) {
+            if(position >= 0 ) {
+                //合法范围
+                openAudio(position);
+            }else {
+                //大于数据总数
+                position = 0;//最后一首
+            }
+        }else if(playmode == MusicPlayService.REPEAT_SINGLE) {
+            //单曲循环
+            if(position >= 0) {
+                //合法范围
+                openAudio(position);
+            }else {
+                //大于数据总数
+                position = 0;//最后一首
+            }
+        }else if(playmode == MusicPlayService.REPEAT_ALL) {
+            //无限循环
+            openAudio(position);
+        }
+    }
+
+    private void setPrePosition() {
+        int playmode = getPlaymode();
+        if(playmode == MusicPlayService.REPEAT_NORMAL) {
+            //顺序播放，播放至最后一首停止
+            //此处还为处理边界
+            position--;
+        }else if(playmode == MusicPlayService.REPEAT_SINGLE) {
+            //单曲循环
+            if(!isCompletion) {
+                position--;//如果是人为点击的上一曲
+            }
+        }else if(playmode == MusicPlayService.REPEAT_ALL) {
+            //无限循环
+            position--;
+            if(position == -1) {
+                position = mediaItems.size() - 1;
+            }
+        }
+    }
+
+    private void openNextPosition() {
+        int playmode = getPlaymode();
+        if(playmode == MusicPlayService.REPEAT_NORMAL) {
+            if(position < mediaItems.size()) {
+                //合法范围
+                openAudio(position);
+            }else {
+                //大于数据总数
+                position = mediaItems.size() - 1;//最后一首
+            }
+        }else if(playmode == MusicPlayService.REPEAT_SINGLE) {
+            //单曲循环
+            if(position < mediaItems.size()) {
+                //合法范围
+                openAudio(position);
+            }else {
+                //大于数据总数
+                position = mediaItems.size() - 1;//最后一首
+            }
+        }else if(playmode == MusicPlayService.REPEAT_ALL) {
+            //无限循环
+            openAudio(position);
+        }
 
     }
 
-    //下一个
-    private void pre() {
+    private void setNextPosition() {
+        int playmode = getPlaymode();
+        if(playmode == MusicPlayService.REPEAT_NORMAL) {
+            //顺序播放，播放至最后一首停止
+            //此处还为处理边界
+            position++;
+        }else if(playmode == MusicPlayService.REPEAT_SINGLE) {
+            //单曲循环
+            if(!isCompletion) {
+                position++;//如果是人为点击的下一曲
+            }
+        }else if(playmode == MusicPlayService.REPEAT_ALL) {
+            //无限循环
+            position++;
+            if(position == mediaItems.size()) {
+                position = 0;
+            }
+        }
+
 
     }
 
@@ -332,6 +453,7 @@ public class MusicPlayService extends Service {
             notifyChange(OPEN_COMPLETE);
 
             start();
+            Log.e("TAG","openAudio===position"+ position);
         }
     }
 
@@ -356,6 +478,9 @@ public class MusicPlayService extends Service {
     private class MyOnCompletionListener implements MediaPlayer.OnCompletionListener {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
+            //如果是正常播完
+            isCompletion = true;
+
             next();
         }
     }
