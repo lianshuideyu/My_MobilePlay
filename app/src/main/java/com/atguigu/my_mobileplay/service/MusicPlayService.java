@@ -105,6 +105,8 @@ public class MusicPlayService extends Service {
     //一个音频的信息类
     private MediaItem mediaItem;
 
+    public static final String OPEN_COMPLETE = "com.atguigu.mobileplayer.OPEN_COMPLETE";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -211,12 +213,12 @@ public class MusicPlayService extends Service {
 
     //得到歌手名字
     private String getArtistName() {
-        return "";
+        return mediaItem.getArtist();
     }
 
     //得到歌曲名字
     private String getAudioName() {
-        return "";
+        return mediaItem.getName();
     }
 
     //得到播放路径
@@ -226,12 +228,12 @@ public class MusicPlayService extends Service {
 
     //得到总时长
     private int getDurtion() {
-        return 0;
+        return mediaPlayer.getDuration();
     }
 
     //得到当前播放进度
     private int getCurrentPosition() {
-        return 0;
+        return mediaPlayer.getCurrentPosition();
     }
 
     //音频拖动
@@ -252,8 +254,20 @@ public class MusicPlayService extends Service {
     private class MyOnPreparedListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
+            //发广播
+            notifyChange(OPEN_COMPLETE);
+
             start();
         }
+    }
+
+    /**
+     * 发送广播
+     * @param action
+     */
+    private void notifyChange(String action) {
+        Intent intent = new Intent(action);
+        sendBroadcast(intent);
     }
 
     private class MyOnErrorListener implements MediaPlayer.OnErrorListener {

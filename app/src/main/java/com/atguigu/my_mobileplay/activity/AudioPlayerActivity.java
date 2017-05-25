@@ -1,12 +1,16 @@
 package com.atguigu.my_mobileplay.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 import com.atguigu.my_mobileplay.IMusicPlayService;
 import com.atguigu.my_mobileplay.R;
 import com.atguigu.my_mobileplay.service.MusicPlayService;
+import com.atguigu.my_mobileplay.utils.Utils;
 
 public class AudioPlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,6 +44,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     //这个就是IMusicPlayService.Stub的实例
     private IMusicPlayService service;
     private int position;
+
+    private MyReceiver receiver;
+    private Utils utils;
+    private final  static  int PROGRESS = 0;
     //链接好服务后的回调
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -91,6 +100,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initData();
 
         findViews();
 
@@ -98,6 +108,64 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
 
         startAndBindService();
     }
+
+    private void initData() {
+        //注册广播
+        receiver = new MyReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MusicPlayService.OPEN_COMPLETE);
+        registerReceiver(receiver,intentFilter);
+
+        utils = new Utils();
+    }
+
+    private class MyReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //主线程
+            setViewData();
+        }
+    }
+
+    private void setViewData() {
+        try {
+            tvArtist.setText(service.getArtistName());
+            tvAudioname.setText(service.getAudioName());
+            int duration = service.getDurtion();
+            seekbarAudio.setMax(duration);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        //发消息
+        handler.sendEmptyMessage(PROGRESS);
+    }
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            switch (msg.what){
+                case PROGRESS:
+                    try {
+                        int currentPosition = service.getCurrentPosition();
+                        seekbarAudio.setProgress(currentPosition);
+
+                        //设置更新时间
+                        tvTime.setText(utils.stringForTime(currentPosition)+"/"+utils.stringForTime(service.getDurtion()));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                    //每秒中更新一次
+                    removeMessages(PROGRESS);
+                    sendEmptyMessageDelayed(PROGRESS,1000);
+
+                    break;
+            }
+        }
+    };
 
     private void startAndBindService() {
         Intent intent = new Intent(this, MusicPlayService.class);
@@ -144,11 +212,19 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         if(conn != null) {
             unbindService(conn);
             conn = null;//释放资源
         }
 
+        //广播取消注册
+        if(receiver != null){
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
     }
+
+
 }
