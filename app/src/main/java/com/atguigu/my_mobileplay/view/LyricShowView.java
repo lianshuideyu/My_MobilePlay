@@ -16,11 +16,17 @@ import java.util.ArrayList;
  */
 
 public class LyricShowView extends TextView {
-    private Paint paint;
+    private Paint paintGreen;
+    private Paint paintWhite;
     private int width;
     private int height;
     private ArrayList<Lyric> lyrics;
-
+    /**
+     * 表示歌词在列表中的哪一句
+     */
+    private int index = 0;//默认第0句
+    private float textHeight = 25;
+    private int currentPosition;
 
     public LyricShowView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,14 +46,25 @@ public class LyricShowView extends TextView {
      * 添加数据
      */
     private void initView() {
-        paint = new Paint();
+        paintGreen = new Paint();
         //设置画笔颜色
-        paint.setColor(Color.GREEN);
+        paintGreen.setColor(Color.GREEN);
         //抗锯齿
-        paint.setAntiAlias(true);
-        paint.setTextSize(25);
+        paintGreen.setAntiAlias(true);
+        paintGreen.setTextSize(25);
         //设置居中
-        paint.setTextAlign(Paint.Align.CENTER);
+        paintGreen.setTextAlign(Paint.Align.CENTER);
+        /**
+         * 白色画笔
+         */
+        paintWhite = new Paint();
+        //设置画笔颜色
+        paintWhite.setColor(Color.WHITE);
+        //抗锯齿
+        paintWhite.setAntiAlias(true);
+        paintWhite.setTextSize(25);
+        //设置居中
+        paintWhite.setTextAlign(Paint.Align.CENTER);
 
         //准备歌词
         lyrics = new ArrayList<>();
@@ -74,7 +91,80 @@ public class LyricShowView extends TextView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if(lyrics != null && lyrics.size() > 0) {
+            //有歌词
+            //当前句--在列表中
+            String currentContent = lyrics.get(index).getContent();
+            //画出当前句
+            canvas.drawText(currentContent,width/2,height/2,paintGreen);
 
-        canvas.drawText("没有找到歌词...", width / 2, height / 2, paint);
+            //得到中间句的Y轴坐标
+            float tempY = height/2;
+
+            //绘制中间句前面的部分
+            for(int i = index - 1; i >= 0; i--) {
+
+                //得到前一部分的歌词内容
+                String preContent = lyrics.get(i).getContent();
+
+                tempY = tempY - textHeight;
+                if(tempY < 0) {
+                    break;
+                }
+                //绘制内容
+                canvas.drawText(preContent,width/2,tempY,paintWhite);
+            }
+
+            //在这里一定要将tempY重新赋值为屏幕中间的坐标
+            tempY = height/2;
+
+            //绘制中间句后面的部分
+            for(int i = index + 1; i < lyrics.size(); i++) {
+                //得到后一部分的歌词内容
+                String nextContent = lyrics.get(i).getContent();
+
+                tempY = tempY + textHeight;
+                if(tempY > height) {
+                    break;
+                }
+                //绘制内容
+                canvas.drawText(nextContent,width/2,tempY,paintWhite);
+
+            }
+
+        }else {
+            canvas.drawText("没有找到歌词...",width/2,height/2,paintGreen);
+        }
+
+    }
+
+
+    /**
+     * 根据播放的位置查找或者计算出当前该高亮显示的是哪一句
+     * 并且得到这一句对应的相关信息
+     *
+     * @param currentPosition
+     */
+    public void setNextShowLyric(int currentPosition) {
+        this.currentPosition = currentPosition;
+        if(lyrics == null || lyrics.size() == 0) {
+            return;
+        }
+        
+        for(int i = 1; i < lyrics.size(); i++) {
+            
+            if(currentPosition < lyrics.get(i).getTimePoint()) {
+                int temIndex = i - 1;
+                if(currentPosition >= lyrics.get(temIndex).getTimePoint()) {
+                    //中间高亮显示的哪一句
+                    index = temIndex;
+                }
+                
+            }
+            
+          
+        }
+        //最后重新绘制
+        invalidate();
     }
 }
