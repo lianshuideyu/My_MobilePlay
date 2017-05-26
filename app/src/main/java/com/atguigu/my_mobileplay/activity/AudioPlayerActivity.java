@@ -24,8 +24,13 @@ import android.widget.TextView;
 
 import com.atguigu.my_mobileplay.IMusicPlayService;
 import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.service.MusicPlayService;
 import com.atguigu.my_mobileplay.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class AudioPlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,11 +64,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
                 try {
                     if(notification) {
                         //什么也不用做,但需从新加载一下数据
-                        setViewData();//加载的还是当前服务所携带的信息
+                        setViewData(null);//加载的还是当前服务所携带的信息
 
                     }else {
                         //如果是从通知栏点击跳转来的那么position默认为0；
                         service.openAudio(position);
+
+                        //链接好服务时就可以设置这两个属性
+                        tvArtist.setText(service.getArtistName());
+                        tvAudioname.setText(service.getAudioName());
                     }
 
                 } catch (RemoteException e) {
@@ -128,6 +137,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         registerReceiver(receiver,intentFilter);
 
         utils = new Utils();
+
+        //注册EventBus
+        EventBus.getDefault().register(this);
     }
 
     private class MyReceiver extends BroadcastReceiver{
@@ -139,15 +151,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         @Override
         public void onReceive(Context context, Intent intent) {
             //主线程
-            setViewData();
+            setViewData(null);
         }
     }
 
-    private void setViewData() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setViewData(MediaItem mediaItem) {
         try {
             setButtonImage();
             tvArtist.setText(service.getArtistName());
             tvAudioname.setText(service.getAudioName());
+
             int duration = service.getDurtion();
             seekbarAudio.setMax(duration);
         } catch (RemoteException e) {
@@ -295,6 +309,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
             unregisterReceiver(receiver);
             receiver = null;
         }
+
+        //取消注册EventBus
+        EventBus.getDefault().unregister(this);
+
         super.onDestroy();
     }
 

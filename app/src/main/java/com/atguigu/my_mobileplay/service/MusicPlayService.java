@@ -26,6 +26,8 @@ import com.atguigu.my_mobileplay.R;
 import com.atguigu.my_mobileplay.activity.AudioPlayerActivity;
 import com.atguigu.my_mobileplay.domain.MediaItem;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -504,8 +506,11 @@ public class MusicPlayService extends Service {
         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            //发广播
-            notifyChange(OPEN_COMPLETE);
+            //发广播--->方法1
+            //notifyChange(OPEN_COMPLETE);
+
+            //方法2-->用EventBus发 消息
+            EventBus.getDefault().post(mediaItem);//里边的参数可以自定义，只要接受的那边和这里一样就可以
 
             start();
             Log.e("TAG","openAudio===position"+ position);
