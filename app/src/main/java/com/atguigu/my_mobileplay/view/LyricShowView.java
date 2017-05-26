@@ -25,7 +25,7 @@ public class LyricShowView extends TextView {
      * 表示歌词在列表中的哪一句
      */
     private int index = 0;//默认第0句
-    private float textHeight = 25;
+    private float textHeight = 60;
     private int currentPosition;
 
     public LyricShowView(Context context, AttributeSet attrs) {
@@ -51,7 +51,7 @@ public class LyricShowView extends TextView {
         paintGreen.setColor(Color.GREEN);
         //抗锯齿
         paintGreen.setAntiAlias(true);
-        paintGreen.setTextSize(25);
+        paintGreen.setTextSize(50);
         //设置居中
         paintGreen.setTextAlign(Paint.Align.CENTER);
         /**
@@ -62,25 +62,25 @@ public class LyricShowView extends TextView {
         paintWhite.setColor(Color.WHITE);
         //抗锯齿
         paintWhite.setAntiAlias(true);
-        paintWhite.setTextSize(25);
+        paintWhite.setTextSize(40);
         //设置居中
         paintWhite.setTextAlign(Paint.Align.CENTER);
 
         //准备歌词
-        lyrics = new ArrayList<>();
-        Lyric lyric = new Lyric();
-        //先做假歌词模拟效果
-        for (int i = 0; i < 1000; i++) {
-            //不同的歌词
-            lyric.setContent("aaaaaaaaaaaaaaaaaa_" + i);
-            lyric.setSleepTime(2000);//高亮持续的时间
-            lyric.setTimePoint(2000*i);
-            //添加到集合
-            lyrics.add(lyric);
-            //重新创建新对象
-            lyric = new Lyric();
-
-        }
+//        lyrics = new ArrayList<>();
+//        Lyric lyric = new Lyric();
+//        //先做假歌词模拟效果
+//        for (int i = 0; i < 1000; i++) {
+//            //不同的歌词
+//            lyric.setContent("aaaaaaaaaaaaaaaaaa_" + i);
+//            lyric.setSleepTime(2000);//高亮持续的时间
+//            lyric.setTimePoint(2000*i);
+//            //添加到集合
+//            lyrics.add(lyric);
+//            //重新创建新对象
+//            lyric = new Lyric();
+//
+//        }
     }
 
     /**
@@ -92,6 +92,12 @@ public class LyricShowView extends TextView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(lyrics != null && lyrics.size() > 0) {
+            //当歌词的高亮行大于歌词的总行数的时候
+            if(index > lyrics.size()) {
+                //当歌词的高亮行大于歌词的总行数的时候直接return;避免越界
+                return;
+            }
+
             //有歌词
             //当前句--在列表中
             String currentContent = lyrics.get(index).getContent();
@@ -166,5 +172,10 @@ public class LyricShowView extends TextView {
         }
         //最后重新绘制
         invalidate();
+    }
+
+    public void setLyrics(ArrayList<Lyric> lyrics) {
+        this.lyrics = lyrics;
+
     }
 }
