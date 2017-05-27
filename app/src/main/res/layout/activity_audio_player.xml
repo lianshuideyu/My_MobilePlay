@@ -12,15 +12,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_icon"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/now_playing_matrix_01"/>
+        <com.atguigu.my_mobileplay.view.BaseVisualizerView
+            android:id="@+id/visualizerview"
+            android:layout_centerHorizontal="true"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            />
 
         <TextView
             android:id="@+id/tv_artist"
-            android:layout_below="@id/iv_icon"
+            android:layout_below="@id/visualizerview"
             android:layout_centerHorizontal="true"
             android:textColor="#ffffff"
             android:textSize="15sp"
@@ -105,6 +112,7 @@
     </LinearLayout>
 
     <com.atguigu.my_mobileplay.view.LyricShowView
+
         android:layout_below="@id/rl_top"
         android:layout_above="@id/ll_bottom"
         android:id="@+id/lyric_show_view"

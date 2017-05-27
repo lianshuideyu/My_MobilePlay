@@ -35,6 +35,8 @@
     <!--定位信息是敏感信息， 可通过Setting.setLocationEnable(false)关闭定位请求 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!--
      android:configChanges="keyboardHidden|orientation|screenSize"
     解决横竖屏，屏幕大小切换等生命周期重新执行的问题

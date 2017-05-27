@@ -120,6 +120,12 @@ public class MusicPlayService extends Service {
         public void setPlaymode(int playmode) throws RemoteException {
             service.setPlaymode(playmode);
         }
+
+        @Override
+        public int getAudioSessionId() throws RemoteException {
+
+            return mediaPlayer.getAudioSessionId();
+        }
     };
 
 
@@ -510,9 +516,10 @@ public class MusicPlayService extends Service {
             //notifyChange(OPEN_COMPLETE);
 
             //方法2-->用EventBus发 消息
+            start();
+
             EventBus.getDefault().post(mediaItem);//里边的参数可以自定义，只要接受的那边和这里一样就可以
 
-            start();
             Log.e("TAG","openAudio===position"+ position);
         }
     }

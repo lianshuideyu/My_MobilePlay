@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,6 +30,7 @@ import com.atguigu.my_mobileplay.domain.MediaItem;
 import com.atguigu.my_mobileplay.service.MusicPlayService;
 import com.atguigu.my_mobileplay.utils.LyricsUtils;
 import com.atguigu.my_mobileplay.utils.Utils;
+import com.atguigu.my_mobileplay.view.BaseVisualizerView;
 import com.atguigu.my_mobileplay.view.LyricShowView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -66,6 +68,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
     private static final int SHOW_LYRIC = 1;
     private LyricShowView lyric_show_view;
 
+    //音乐频谱相关
+    private BaseVisualizerView visualizerview;
+    private Visualizer mVisualizer;
+
     //链接好服务后的回调
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -97,6 +103,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         }
     };
 
+
+
     private void findViews() {
         setContentView(R.layout.activity_audio_player);
         ivIcon = (ImageView)findViewById(R.id.iv_icon);
@@ -120,6 +128,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         btnLyric = (Button)findViewById( R.id.btn_lyric );
 
         lyric_show_view = (LyricShowView)findViewById(R.id.lyric_show_view);
+        visualizerview = (BaseVisualizerView) findViewById(R.id.visualizerview);
 
         btnPlaymode.setOnClickListener( this );
         btnPre.setOnClickListener( this );
@@ -211,7 +220,28 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         //发消息更新歌词
         handler.sendEmptyMessage(SHOW_LYRIC);
 
+        //显示音乐频谱
+        setupVisualizerFxAndUi();
+
     }
+
+    private void setupVisualizerFxAndUi() {
+        int audioSessionid = 0;
+        try {
+            audioSessionid = service.getAudioSessionId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        System.out.println("audioSessionid==" + audioSessionid);
+        mVisualizer = new Visualizer(audioSessionid);
+        // 参数内必须是2的位数
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        // 设置允许波形表示，并且捕获它
+        visualizerview.setVisualizer(mVisualizer);
+        mVisualizer.setEnabled(true);
+
+    }
+
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -398,5 +428,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
         public void onStopTrackingTouch(SeekBar seekBar) {
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //当音乐暂停的时候频谱也停止跳动
+        if(isFinishing()) {
+            mVisualizer.release();
+        }
+
     }
 }

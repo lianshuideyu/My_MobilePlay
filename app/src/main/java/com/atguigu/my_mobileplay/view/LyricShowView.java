@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.atguigu.my_mobileplay.domain.Lyric;
+import com.atguigu.my_mobileplay.utils.DensityUtil;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
  */
 
 public class LyricShowView extends TextView {
+    private final Context context;
     private Paint paintGreen;
     private Paint paintWhite;
     private int width;
@@ -25,7 +27,7 @@ public class LyricShowView extends TextView {
      * 表示歌词在列表中的哪一句
      */
     private int index = 0;//默认第0句
-    private float textHeight = 60;
+    private float textHeight = 20;
     private int currentPosition;
 
     /**
@@ -40,6 +42,7 @@ public class LyricShowView extends TextView {
 
     public LyricShowView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
 
         initView();
     }
@@ -56,12 +59,14 @@ public class LyricShowView extends TextView {
      * 添加数据
      */
     private void initView() {
+        textHeight = DensityUtil.dip2px(context,30);
+
         paintGreen = new Paint();
         //设置画笔颜色
         paintGreen.setColor(Color.GREEN);
         //抗锯齿
         paintGreen.setAntiAlias(true);
-        paintGreen.setTextSize(50);
+        paintGreen.setTextSize(DensityUtil.dip2px(context,25));
         //设置居中
         paintGreen.setTextAlign(Paint.Align.CENTER);
         /**
@@ -72,7 +77,7 @@ public class LyricShowView extends TextView {
         paintWhite.setColor(Color.WHITE);
         //抗锯齿
         paintWhite.setAntiAlias(true);
-        paintWhite.setTextSize(40);
+        paintWhite.setTextSize(DensityUtil.dip2px(context,25));
         //设置居中
         paintWhite.setTextAlign(Paint.Align.CENTER);
 
