@@ -108,6 +108,22 @@ public class LyricShowView extends TextView {
                 return;
             }
 
+            if(index != lyrics.size() - 1) {
+                float push = 0;//这一句要移动的距离
+
+                if(sleepTime == 0) {
+                    push = 0;
+                }else  {
+                    //这一句要移动的距离：这一句要花的时间 = 总距离（行高）：这一句休眠的时间
+                    //--> 这一句要移动的距离 = 总距离（行高）/这一句休眠的时间 * 这一句要花的时间
+                    push = textHeight / sleepTime * (currentPosition - timePoint);
+                }
+                canvas.translate(0,-push);
+            }
+
+
+
+
             //有歌词
             //当前句--在列表中
             String currentContent = lyrics.get(index).getContent();
@@ -175,6 +191,10 @@ public class LyricShowView extends TextView {
                     //中间高亮显示的哪一句
                     index = temIndex;
 
+                    //当前句的时间戳
+                    sleepTime = lyrics.get(index).getSleepTime();
+                    //高亮的时间
+                    timePoint = lyrics.get(index).getTimePoint();
 
                 }
                 
