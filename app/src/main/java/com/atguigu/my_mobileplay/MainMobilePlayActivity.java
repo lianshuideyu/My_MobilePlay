@@ -5,11 +5,13 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.atguigu.my_mobileplay.fragment.BaseFragment;
 import com.atguigu.my_mobileplay.page.LocalAudioFragment;
@@ -116,10 +118,60 @@ public class MainMobilePlayActivity extends AppCompatActivity {
         fragments.add(new NetVideoFragment());
     }
 
+
+    /**
+     * 解决安卓6.0以上版本不能读取外部存储权限的问题
+     * @param activity
+     * @return
+     */
+    public static boolean isGrantExternalRW(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.checkSelfPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            activity.requestPermissions(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, 1);
+
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isBack = false;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            if(position != 0) {
+                rg_bottom.check(R.id.rb_local_video);
+                return true;
+            }
+
+            if(!isBack) {
+                isBack = true;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        isBack = false;
+                    }
+                },2000);
+
+                Toast.makeText(MainMobilePlayActivity.this, "点击返回确定退出", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+        }
+
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+
     /**
      * 声明周期
      */
-    @Override
+    /*@Override
     protected void onRestart() {
         super.onRestart();
         Log.e("MainActivity", "onRestart");
@@ -153,24 +205,5 @@ public class MainMobilePlayActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.e("MainActivity", "onDestroy");
-    }
-
-    /**
-     * 解决安卓6.0以上版本不能读取外部存储权限的问题
-     * @param activity
-     * @return
-     */
-    public static boolean isGrantExternalRW(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.checkSelfPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-            activity.requestPermissions(new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            }, 1);
-
-            return false;
-        }
-        return true;
-    }
+    }*/
 }
