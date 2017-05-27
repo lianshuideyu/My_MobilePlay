@@ -28,6 +28,16 @@ public class LyricShowView extends TextView {
     private float textHeight = 60;
     private int currentPosition;
 
+    /**
+     * 时间戳
+     */
+    private long timePoint;
+    /**
+     * 高亮显示时间
+     */
+    private long sleepTime;
+
+
     public LyricShowView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -164,11 +174,14 @@ public class LyricShowView extends TextView {
                 if(currentPosition >= lyrics.get(temIndex).getTimePoint()) {
                     //中间高亮显示的哪一句
                     index = temIndex;
+
+
                 }
                 
+            }else {
+                index = i;//解决高亮歌词不能显示最后一行的问题
             }
-            
-          
+
         }
         //最后重新绘制
         invalidate();

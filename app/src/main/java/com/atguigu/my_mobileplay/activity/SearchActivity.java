@@ -11,7 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.atguigu.my_mobileplay.R;
+import com.atguigu.my_mobileplay.adapter.SearchAdapter;
+import com.atguigu.my_mobileplay.domain.SearchBean;
 import com.atguigu.my_mobileplay.utils.JsonParser;
+import com.google.gson.Gson;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -22,9 +25,13 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -34,6 +41,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private ListView lv;
     // 用HashMap存储听写结果
     private HashMap<String, String> mIatResults = new LinkedHashMap<String, String>();
+
+    public static final String NET_SEARCH_URL = "http://hot.news.cntv.cn/index.php?controller=list&action=searchList&sort=date&n=20&wd=";
+    private String url;
+
+    private List<SearchBean.ItemsBean> datas;
+    private SearchAdapter adapter;
 
     /**
      * Find the Views in the layout<br />
@@ -68,8 +81,66 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 showVoiceDialog();
                 break;
             case R.id.tv_go:
+                //联网查询数据
+                toSearch();
+
                 break;
         }
+    }
+
+    private void toSearch() {
+        String trim = etSousuo.getText().toString().trim();
+
+        if(!trim.isEmpty()) {
+            //拼接链接地址
+            url = NET_SEARCH_URL + trim;
+            getDataFromNet(url);
+
+        }else  {
+            Toast.makeText(SearchActivity.this, "请输入关键字", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    private void getDataFromNet(final String url) {
+        RequestParams request = new RequestParams(url);
+        x.http().get(request, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Log.e("TAG", "请求成功-result==" + result);
+                Log.e("TAG", "请求成功-url==" + url );
+                processData(result);
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                Log.e("TAG", "请求失败==" + ex.getMessage());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
+    }
+
+
+    private void processData(String json) {
+        SearchBean searchBean = new Gson().fromJson(json, SearchBean.class);
+
+        datas = searchBean.getItems();
+        if(datas != null && datas.size() > 0) {
+            adapter = new SearchAdapter(this,datas);
+            lv.setAdapter(adapter);
+        }
+
     }
 
     private void showVoiceDialog() {
@@ -134,8 +205,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         for (String key : mIatResults.keySet()) {
             resultBuffer.append(mIatResults.get(key));
         }
+        String stri = resultBuffer.toString();
+        stri = stri.replace("。","");
 
-        etSousuo.setText(resultBuffer.toString());
+        etSousuo.setText(stri);
         etSousuo.setSelection(etSousuo.length());
     }
 }
