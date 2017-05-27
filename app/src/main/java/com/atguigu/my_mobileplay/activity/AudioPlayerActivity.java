@@ -58,7 +58,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements View.OnCli
 
     private MyReceiver receiver;
     private Utils utils;
-    private final  static  int PROGRESS = 0;
+    private static final int PROGRESS = 0;
 
     private boolean notification;
 
