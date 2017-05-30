@@ -154,7 +154,7 @@ public class NetAudioFragmentAdapter extends BaseAdapter {
                     textHolder = (TextHolder) convertView.getTag();
                 }
 
-//                textHolder.setData(mediaItem);
+                textHolder.setData(mediaItem);
 
                 break;
             case TYPE_GIF://gif
@@ -328,11 +328,20 @@ public class NetAudioFragmentAdapter extends BaseAdapter {
         }
     }
 
-    class TextHolder {
-        TextView tv_video;
+    class TextHolder extends BaseViewHolder{
+        TextView tvContext;
 
         public TextHolder(View convertView) {
+            super(convertView);
+            //中间公共部分 -所有的都有
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+        }
 
+        public void setData(NetAudioBean.ListBean mediaItem) {
+            super.setData(mediaItem);
+
+            //设置文本-所有的都有
+            tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
         }
     }
 
