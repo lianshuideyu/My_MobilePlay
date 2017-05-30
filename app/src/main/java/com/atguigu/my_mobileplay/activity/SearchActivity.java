@@ -55,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
      * (http://www.buzzingandroid.com/tools/android-layout-finder)
      */
     private void findViews() {
+        setContentView(R.layout.activity_search);
         etSousuo = (EditText) findViewById(R.id.et_sousuo);
         ivVoice = (ImageView) findViewById(R.id.iv_voice);
         tvGo = (TextView) findViewById(R.id.tv_go);
@@ -68,7 +69,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+
 
         findViews();
     }
