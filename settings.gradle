@@ -1,1 +1,1 @@
-include ':app', ':StartAllVideoPlayer', ':vitamio-sample', ':vitamio'
+include ':app', ':StartAllVideoPlayer', ':vitamio-sample', ':vitamio', ':PhotoView_library'
