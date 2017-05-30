@@ -12,6 +12,7 @@ import com.atguigu.my_mobileplay.R;
 import com.atguigu.my_mobileplay.domain.NetAudioBean;
 import com.atguigu.my_mobileplay.utils.Utils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.xutils.x;
 
@@ -129,62 +130,58 @@ public class NetAudioFragmentAdapter extends BaseAdapter {
                 videoHoder.setData(mediaItem);
 
                 break;
-            case TYPE_IMAGE:
+            case TYPE_IMAGE://图片
                 ImageHolder imageHolder;
                 if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.all, null);
-                    imageHolder = new ImageHolder();
-                    imageHolder.tv_video = (TextView) convertView.findViewById(R.id.tv_video);
+                    convertView = View.inflate(mContext, R.layout.all_image_item, null);
+                    imageHolder = new ImageHolder(convertView);
                     convertView.setTag(imageHolder);
                 } else {
                     imageHolder = (ImageHolder) convertView.getTag();
                 }
-
                 //设置数据
-                imageHolder.tv_video.setText("img");
+                imageHolder.setData(mediaItem);
                 break;
-            case TYPE_TEXT:
+            case TYPE_TEXT://文字
+
                 TextHolder textHolder;
                 if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.all, null);
-                    textHolder = new TextHolder();
-                    textHolder.tv_video = (TextView) convertView.findViewById(R.id.tv_video);
+                    convertView = View.inflate(mContext, R.layout.all_text_item, null);
+                    textHolder = new TextHolder(convertView);
+
                     convertView.setTag(textHolder);
                 } else {
                     textHolder = (TextHolder) convertView.getTag();
                 }
 
-                //设置数据
-                textHolder.tv_video.setText("text");
+//                textHolder.setData(mediaItem);
+
                 break;
-            case TYPE_GIF:
+            case TYPE_GIF://gif
+
                 GifHolder gifHolder;
                 if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.all, null);
-                    gifHolder = new GifHolder();
-                    gifHolder.tv_video = (TextView) convertView.findViewById(R.id.tv_video);
+                    convertView = View.inflate(mContext, R.layout.all_gif_item, null);
+                    gifHolder = new GifHolder(convertView);
+
                     convertView.setTag(gifHolder);
                 } else {
                     gifHolder = (GifHolder) convertView.getTag();
                 }
 
-                //设置数据
-                gifHolder.tv_video.setText("gif");
+//                gifHolder.setData(mediaItem);
 
                 break;
-            case TYPE_AD:
+            case TYPE_AD://软件广告
+
                 ADHolder adHolder;
                 if (convertView == null) {
-                    convertView = View.inflate(mContext, R.layout.all, null);
-                    adHolder = new ADHolder();
-                    adHolder.tv_video = (TextView) convertView.findViewById(R.id.tv_video);
+                    convertView = View.inflate(mContext, R.layout.all_ad_item, null);
+                    adHolder = new ADHolder(convertView);
                     convertView.setTag(adHolder);
                 } else {
                     adHolder = (ADHolder) convertView.getTag();
                 }
-
-                //设置数据
-                adHolder.tv_video.setText("AD");
 
                 break;
         }
@@ -301,20 +298,57 @@ public class NetAudioFragmentAdapter extends BaseAdapter {
         }
     }
 
-    class ImageHolder {
-        TextView tv_video;
+    class ImageHolder extends BaseViewHolder{
+        TextView tvContext;
+        ImageView ivImageIcon;
+
+        public ImageHolder(View convertView) {
+            super(convertView);
+//中间公共部分 -所有的都有
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+            ivImageIcon = (ImageView) convertView.findViewById(R.id.iv_image_icon);
+        }
+
+        public void setData(NetAudioBean.ListBean mediaItem) {
+            super.setData(mediaItem);
+
+            //设置文本-所有的都有
+            tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
+            //图片特有的
+
+            ivImageIcon.setImageResource(R.drawable.bg_item);
+            if (mediaItem.getImage() != null && mediaItem.getImage() != null && mediaItem.getImage().getSmall() != null) {
+                Glide.with(mContext)
+                        .load(mediaItem.getImage().getDownload_url().get(0))
+                        .placeholder(R.drawable.bg_item)
+                        .error(R.drawable.bg_item)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(ivImageIcon);
+            }
+        }
     }
 
     class TextHolder {
         TextView tv_video;
 
+        public TextHolder(View convertView) {
+
+        }
     }
 
     class GifHolder {
         TextView tv_video;
+
+        public GifHolder(View convertView) {
+
+        }
     }
 
     class ADHolder {
         TextView tv_video;
+
+        public ADHolder(View convertView) {
+
+        }
     }
 }
